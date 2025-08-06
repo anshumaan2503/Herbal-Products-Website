@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
-import psycopg2
+import sqlite3
 import os
 from werkzeug.utils import secure_filename
 
@@ -10,18 +10,12 @@ app.secret_key = 'your_secret_key'  # Add a secret key for sessions
 
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-DATABASE_URL = os.environ.get('DATABASE_URL')  # Render sets this automatically
-
-def get_db_connection():
-    conn = psycopg2.connect(DATABASE_URL)
-    return conn
-
 def init_db():
-    conn = get_db_connection()
+    conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS products (
-            id SERIAL PRIMARY KEY,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
             description TEXT,
             price TEXT,
@@ -36,7 +30,7 @@ init_db()
 # ✅ Home page - Show all products
 @app.route('/')
 def home():
-    conn = psycopg2.connect(DATABASE_URL)
+    conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM products")
     products = cursor.fetchall()
@@ -68,7 +62,7 @@ def logout():
 def dashboard():
     if not session.get('admin_logged_in'):
         return redirect(url_for('admin_login'))
-    conn = psycopg2.connect(DATABASE_URL)
+    conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM products")
     products = cursor.fetchall()
@@ -91,9 +85,9 @@ def add_product():
             image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_filename)
             image.save(image_path)
 
-            conn = psycopg2.connect(DATABASE_URL)
+            conn = sqlite3.connect('database.db')
             cursor = conn.cursor()
-            cursor.execute("INSERT INTO products (name, description, price, image) VALUES (%s, %s, %s, %s)",
+            cursor.execute("INSERT INTO products (name, description, price, image) VALUES (?, ?, ?, ?)",
                            (name, description, price, image_filename))
             conn.commit()
             conn.close()
@@ -107,15 +101,15 @@ def add_product():
 def delete_product(product_id):
     if not session.get('admin_logged_in'):
         return redirect(url_for('admin_login'))
-    conn = psycopg2.connect(DATABASE_URL)
+    conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
 
     # Fetch image filename before deletion
-    cursor.execute("SELECT image FROM products WHERE id = %s", (product_id,))
+    cursor.execute("SELECT image FROM products WHERE id = ?", (product_id,))
     image = cursor.fetchone()
 
     # Delete from database
-    cursor.execute("DELETE FROM products WHERE id = %s", (product_id,))
+    cursor.execute("DELETE FROM products WHERE id = ?", (product_id,))
     conn.commit()
     conn.close()
 
