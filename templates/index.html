@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Herbal Life Products</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='beautiful.css') }}">
+    
+    <!-- Fonts & Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <i class="fa-solid fa-leaf" style="color:#c8e6c9;margin-right:8px;"></i>
+            Herbal<span>Life</span>
+        </div>
+        <div class="hamburger" id="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <nav class="nav" id="nav">
+            <a href="#home"><i class="fa-solid fa-house"></i> Home</a>
+            <a href="#products"><i class="fa-solid fa-seedling"></i> Products</a>
+            <a href="#about"><i class="fa-solid fa-circle-info"></i> About</a>
+            <a href="#contact"><i class="fa-brands fa-whatsapp"></i> Contact</a>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-text">
+            <h1>Natural & Healthy Living</h1>
+            <p>Discover herbal products that enhance your lifestyle naturally.</p>
+            <a href="#products" class="btn">Shop Now</a>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="products" class="products section">
+        <h2 class="section-title">Our Products</h2>
+        <div class="product-grid">
+            {% if products %}
+                {% for product in products %}
+                    <div class="product-card">
+                        <img src="{{ url_for('static', filename='images/' + product[4]) }}" alt="{{ product[1] }}">
+                        <h3>{{ product[1] }}</h3>
+                        <p>{{ product[2] }}</p>
+                        <p><strong>₹{{ product[3] }}</strong></p>
+                        <a href="https://wa.me/1234567890" class="btn">Buy Now</a>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p style="text-align:center;">No products found. Please add some!</p>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about section">
+        <h2 class="section-title">About Us</h2>
+        <p>We provide herbal products sourced from nature to support a healthy lifestyle. Our mission is to help you achieve wellness through organic solutions.</p>
+    </section>
+
+    <!-- Contact Section whatsapp -->
+    <section id="contact" class="contact section">
+        <h2 class="section-title">Contact Us</h2>
+        <p>Have questions or want to place an order? Reach us on WhatsApp.</p>
+        <a href="https://wa.me/8305909173" class="btn">WhatsApp Us</a>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2025 Herbal Life. All Rights Reserved.</p>
+    </footer>
+
+    <!-- JS -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+        // Hamburger menu toggle
+        const hamburger = document.getElementById('hamburger');
+        const nav = document.getElementById('nav');
+        hamburger.addEventListener('click', function() {
+            hamburger.classList.toggle('active');
+            nav.classList.toggle('active');
+        });
+        // Close nav on link click (mobile)
+        document.querySelectorAll('.nav a').forEach(link => {
+            link.addEventListener('click', () => {
+                if(window.innerWidth <= 768) {
+                    hamburger.classList.remove('active');
+                    nav.classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

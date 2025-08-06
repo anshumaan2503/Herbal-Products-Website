@@ -1,0 +1,296 @@
+/* Hamburger Menu Styles */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    z-index: 1100;
+}
+.hamburger span {
+    display: block;
+    width: 28px;
+    height: 4px;
+    margin: 4px 0;
+    background: #fff;
+    border-radius: 2px;
+    transition: 0.4s;
+}
+.hamburger.active span:nth-child(1) {
+    transform: rotate(45deg) translate(6px, 6px);
+}
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+}
+.hamburger.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -7px);
+}
+
+@media (max-width: 768px) {
+    .nav {
+        position: absolute;
+        top: 70px;
+        right: 0;
+        background: linear-gradient(90deg, #388e3c 60%, #43ea7c 100%);
+        flex-direction: column;
+        width: 180px;
+        gap: 0;
+        box-shadow: 0 2px 12px rgba(46, 125, 50, 0.10);
+        border-radius: 0 0 0 16px;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(-20px);
+        transition: opacity 0.3s, transform 0.3s;
+    }
+    .nav.active {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0);
+    }
+    .nav a {
+        padding: 1rem 2rem;
+        border-radius: 0;
+        font-size: 1.1rem;
+        border-bottom: 1px solid #c8e6c9;
+    }
+    .hamburger {
+        display: flex;
+    }
+    .header {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+}
+/* Navigation Bar Animations */
+.header {
+    animation: navFadeIn 1s ease;
+}
+
+@keyframes navFadeIn {
+    0% { opacity: 0; transform: translateY(-40px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.logo {
+    animation: logoPop 1.2s cubic-bezier(.68,-0.55,.27,1.55);
+}
+
+@keyframes logoPop {
+    0% { opacity: 0; transform: scale(0.7) rotate(-10deg); }
+    60% { opacity: 1; transform: scale(1.1) rotate(5deg); }
+    100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+.nav a {
+    position: relative;
+    overflow: hidden;
+}
+
+.nav a::after {
+    content: '';
+    position: absolute;
+    left: 0; bottom: 0;
+    width: 100%; height: 3px;
+    background: linear-gradient(90deg, #43ea7c 0%, #388e3c 100%);
+    transform: scaleX(0);
+    transition: transform 0.3s;
+}
+
+.nav a:hover::after {
+    transform: scaleX(1);
+}
+
+.nav a {
+    transition: background 0.3s, color 0.3s, box-shadow 0.3s, transform 0.2s;
+}
+
+.nav a:hover {
+    transform: translateY(-2px) scale(1.05);
+}
+/* Enhanced Navigation Bar Styles */
+.header {
+    background: linear-gradient(90deg, #388e3c 60%, #43ea7c 100%);
+    box-shadow: 0 2px 12px rgba(46, 125, 50, 0.10);
+    border-bottom: 2px solid #c8e6c9;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    font-size: 2rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+    color: #fff;
+}
+
+.logo i {
+    font-size: 2rem;
+    margin-right: 8px;
+    color: #c8e6c9;
+}
+
+.nav {
+    display: flex;
+    gap: 2rem;
+}
+
+.nav a {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 500;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+    text-decoration: none;
+    position: relative;
+}
+
+.nav a i {
+    font-size: 1.1rem;
+    color: #c8e6c9;
+    transition: color 0.3s;
+}
+
+.nav a:hover {
+    background: #c8e6c9;
+    color: #388e3c;
+    box-shadow: 0 2px 8px rgba(46, 125, 50, 0.10);
+}
+
+.nav a:hover i {
+    color: #388e3c;
+}
+/* Additional beautiful styles for herbal website */
+.hero {
+    background: linear-gradient(120deg, #e8f5e9 0%, #c8e6c9 100%), url('../static/images/hero.jpg') no-repeat center center/cover;
+    position: relative;
+    height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #2e7d32;
+}
+
+.hero-text {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 2.5rem 2rem;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(46, 125, 50, 0.15);
+    max-width: 500px;
+    margin: auto;
+}
+
+.hero-text h1 {
+    font-size: 2.8rem;
+    font-weight: 600;
+    color: #388e3c;
+    margin-bottom: 1rem;
+    letter-spacing: 1px;
+}
+
+.hero-text p {
+    font-size: 1.2rem;
+    color: #4caf50;
+    margin-bottom: 2rem;
+}
+
+.hero .btn {
+    font-size: 1.1rem;
+    padding: 0.8rem 2rem;
+    border-radius: 25px;
+    background: linear-gradient(90deg, #43ea7c 0%, #2e7d32 100%);
+    box-shadow: 0 2px 8px rgba(46, 125, 50, 0.15);
+}
+
+/* Product Card Enhancements */
+.product-card {
+    border: none;
+    box-shadow: 0 4px 24px rgba(46, 125, 50, 0.10);
+    border-radius: 16px;
+    padding: 1.5rem 1rem;
+    transition: transform 0.3s, box-shadow 0.3s;
+    background: linear-gradient(120deg, #f1f8e9 0%, #fff 100%);
+}
+
+.product-card img {
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(46, 125, 50, 0.08);
+    margin-bottom: 1rem;
+}
+
+.product-card h3 {
+    color: #388e3c;
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+}
+
+.product-card p {
+    color: #4caf50;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.product-card strong {
+    color: #2e7d32;
+    font-size: 1.1rem;
+}
+
+.product-card .btn {
+    margin-top: 0.8rem;
+    font-size: 1rem;
+    border-radius: 20px;
+    background: linear-gradient(90deg, #43ea7c 0%, #2e7d32 100%);
+}
+
+/* Section Titles */
+.section-title {
+    font-size: 2.2rem;
+    color: #388e3c;
+    font-weight: 600;
+    margin-bottom: 2rem;
+    letter-spacing: 1px;
+}
+
+/* About & Contact Section Enhancements */
+.about, .contact {
+    background: linear-gradient(120deg, #e8f5e9 0%, #c8e6c9 100%);
+    border-radius: 16px;
+    box-shadow: 0 2px 16px rgba(46, 125, 50, 0.08);
+    margin-bottom: 2rem;
+}
+
+.about p, .contact p {
+    color: #388e3c;
+    font-size: 1.1rem;
+}
+
+/* Footer Enhancements */
+.footer {
+    background: linear-gradient(90deg, #43ea7c 0%, #2e7d32 100%);
+    color: #fff;
+    font-size: 1rem;
+    border-radius: 0 0 16px 16px;
+    box-shadow: 0 -2px 8px rgba(46, 125, 50, 0.08);
+}
+
+/* Responsive Improvements */
+@media (max-width: 600px) {
+    .hero-text {
+        padding: 1.2rem 0.5rem;
+        font-size: 1.1rem;
+    }
+    .section-title {
+        font-size: 1.4rem;
+    }
+    .product-card {
+        width: 98%;
+        padding: 1rem 0.5rem;
+    }
+}
