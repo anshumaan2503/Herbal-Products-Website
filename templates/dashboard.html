@@ -78,12 +78,12 @@
       <tbody>
         {% for product in products %}
         <tr>
-          <td><img src="{{ url_for('static', filename='images/' + product[4]) }}" class="product-img"></td>
-          <td>{{ product[1] }}</td>
-          <td>{{ product[2] }}</td>
-          <td>₹{{ product[3] }}</td>
+          <td><img src="{{ url_for('static', filename='images/' + product.image) }}" class="product-img"></td>
+          <td>{{ product.name }}</td>
+          <td>{{ product.description }}</td>
+          <td>₹{{ product.price }}</td>
           <td class="text-center">
-            <a href="{{ url_for('delete_product', product_id=product[0]) }}" class="btn btn-danger btn-sm">Delete</a>
+            <a href="{{ url_for('delete_product', product_id=product._id) }}" class="btn btn-danger btn-sm">Delete</a>
           </td>
         </tr>
         {% endfor %}

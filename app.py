@@ -1,40 +1,59 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
-import sqlite3
+from pymongo import MongoClient
 import os
 from werkzeug.utils import secure_filename
+from bson import ObjectId
+from urllib.parse import quote
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'static/images'
 app.secret_key = 'your_secret_key'  # Add a secret key for sessions
 
+# MongoDB Configuration
+MONGO_URI = "mongodb://localhost:27017/"
+DB_NAME = "Herbal_Website"
+COLLECTION_NAME = "Herbal"
+
+# Initialize MongoDB connection
+try:
+    client = MongoClient(MONGO_URI)
+    # Test the connection
+    client.admin.command('ping')
+    db = client[DB_NAME]
+    products_collection = db[COLLECTION_NAME]
+    print("✅ MongoDB connected successfully!")
+except Exception as e:
+    print(f"❌ MongoDB connection failed: {e}")
+    print("Please make sure MongoDB is running on localhost:27017")
+    client = None
+    db = None
+    products_collection = None
 
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
+# Custom Jinja2 filter for URL encoding
+@app.template_filter('urlencode')
+def urlencode_filter(s):
+    return quote(str(s))
+
 def init_db():
-    conn = sqlite3.connect('database.db')
-    cursor = conn.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS products (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            description TEXT,
-            price TEXT,
-            image TEXT
-        )
-    ''')
-    conn.commit()
-    conn.close()
+    if products_collection is not None:
+        # Create indexes for better performance
+        products_collection.create_index("name")
+        print("MongoDB database initialized successfully!")
+    else:
+        print("❌ Cannot initialize database - MongoDB not connected")
 
 init_db()
 
 # ✅ Home page - Show all products
 @app.route('/')
 def home():
-    conn = sqlite3.connect('database.db')
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM products")
-    products = cursor.fetchall()
-    conn.close()
+    if products_collection is not None:
+        products = list(products_collection.find())
+    else:
+        products = []
+        flash('Database connection error. Please try again later.', 'error')
     return render_template('index.html', products=products)
 
 # Admin login page
@@ -62,11 +81,11 @@ def logout():
 def dashboard():
     if not session.get('admin_logged_in'):
         return redirect(url_for('admin_login'))
-    conn = sqlite3.connect('database.db')
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM products")
-    products = cursor.fetchall()
-    conn.close()
+    if products_collection is not None:
+        products = list(products_collection.find())
+    else:
+        products = []
+        flash('Database connection error. Please try again later.', 'error')
     return render_template('dashboard.html', products=products)
 
 # Protect add-product route
@@ -85,40 +104,53 @@ def add_product():
             image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_filename)
             image.save(image_path)
 
-            conn = sqlite3.connect('database.db')
-            cursor = conn.cursor()
-            cursor.execute("INSERT INTO products (name, description, price, image) VALUES (?, ?, ?, ?)",
-                           (name, description, price, image_filename))
-            conn.commit()
-            conn.close()
+            # Insert product into MongoDB
+            if products_collection is not None:
+                product_data = {
+                    'name': name,
+                    'description': description,
+                    'price': price,
+                    'image': image_filename
+                }
+                products_collection.insert_one(product_data)
+                flash('Product added successfully!', 'success')
+            else:
+                flash('Database connection error. Product not saved.', 'error')
 
         return redirect(url_for('dashboard'))
 
     return render_template('add_product.html')
 
 # Protect delete route
-@app.route('/delete/<int:product_id>')
+@app.route('/delete/<product_id>')
 def delete_product(product_id):
     if not session.get('admin_logged_in'):
         return redirect(url_for('admin_login'))
-    conn = sqlite3.connect('database.db')
-    cursor = conn.cursor()
-
-    # Fetch image filename before deletion
-    cursor.execute("SELECT image FROM products WHERE id = ?", (product_id,))
-    image = cursor.fetchone()
-
-    # Delete from database
-    cursor.execute("DELETE FROM products WHERE id = ?", (product_id,))
-    conn.commit()
-    conn.close()
-
-    # Delete image file from disk
-    if image and image[0]:
-        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image[0])
-        if os.path.exists(image_path):
-            os.remove(image_path)
-
+    
+    try:
+        if products_collection is not None:
+            # Convert string ID to ObjectId
+            product_object_id = ObjectId(product_id)
+            
+            # Fetch image filename before deletion
+            product = products_collection.find_one({'_id': product_object_id})
+            
+            if product:
+                # Delete from database
+                products_collection.delete_one({'_id': product_object_id})
+                
+                # Delete image file from disk
+                if product.get('image'):
+                    image_path = os.path.join(app.config['UPLOAD_FOLDER'], product['image'])
+                    if os.path.exists(image_path):
+                        os.remove(image_path)
+        else:
+            flash('Database connection error. Product not deleted.', 'error')
+        
+    except Exception as e:
+        print(f"Error deleting product: {e}")
+        flash('Error deleting product. Please try again.', 'error')
+    
     return redirect(url_for('dashboard'))
 
 # Change /admin to redirect to login

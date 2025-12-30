@@ -11,12 +11,17 @@
     
     <!-- Fonts & Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    
+    <!-- GSAP CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
 </head>
 <body>
     <!-- Header -->
-    <header class="header">
-        <div class="logo">
+    <header class="header" id="header">
+        <div class="logo" id="logo">
             <i class="fa-solid fa-leaf" style="color:#c8e6c9;margin-right:8px;"></i>
             Herbal<span>Products</span>
         </div>
@@ -26,59 +31,123 @@
             <span></span>
         </div>
         <nav class="nav" id="nav">
-            <a href="#home"><i class="fa-solid fa-house"></i> Home</a>
-            <a href="#products"><i class="fa-solid fa-seedling"></i> Products</a>
-            <a href="#about"><i class="fa-solid fa-circle-info"></i> About</a>
-            <a href="#contact"><i class="fa-brands fa-whatsapp"></i> Contact</a>
+            <a href="#home" class="nav-link"><i class="fa-solid fa-house"></i> Home</a>
+            <a href="#products" class="nav-link"><i class="fa-solid fa-seedling"></i> Products</a>
+            <a href="#about" class="nav-link"><i class="fa-solid fa-circle-info"></i> About</a>
+            <a href="#contact" class="nav-link"><i class="fa-brands fa-whatsapp"></i> Contact</a>
         </nav>
     </header>
 
     <!-- Hero Section -->
     <section id="home" class="hero">
-        <div class="hero-text">
-            <h1>Natural & Healthy Living</h1>
-            <p>Discover herbal products that enhance your lifestyle naturally.</p>
-            <a href="#products" class="btn">Shop Now</a>
+        <div class="hero-content">
+            <div class="hero-text" id="hero-text">
+                <h1 class="hero-title" id="hero-title">Natural & Healthy Living</h1>
+                <p class="hero-subtitle" id="hero-subtitle">Discover herbal products that enhance your lifestyle naturally.</p>
+                <a href="#products" class="btn hero-btn" id="hero-btn">Shop Now</a>
+            </div>
+            <div class="hero-visual" id="hero-visual">
+                <div class="floating-leaves">
+                    <i class="fa-solid fa-leaf leaf-1"></i>
+                    <i class="fa-solid fa-leaf leaf-2"></i>
+                    <i class="fa-solid fa-leaf leaf-3"></i>
+                    <i class="fa-solid fa-seedling leaf-4"></i>
+                </div>
+            </div>
         </div>
     </section>
 
     <!-- Products Section -->
     <section id="products" class="products section">
-        <h2 class="section-title">Our Products</h2>
-        <div class="product-grid">
-            {% if products %}
-                {% for product in products %}
-                    <div class="product-card">
-                        <img src="{{ url_for('static', filename='images/' + product[4]) }}" alt="{{ product[1] }}">
-                        <h3>{{ product[1] }}</h3>
-                        <p>{{ product[2] }}</p>
-                        <p><strong>₹{{ product[3] }}</strong></p>
-                        <a href="https://wa.me/1234567890" class="btn">Buy Now</a>
+        <div class="container">
+            <h2 class="section-title" id="products-title">Our Products</h2>
+            <div class="product-grid" id="product-grid">
+                {% if products %}
+                    {% for product in products %}
+                        <div class="product-card" data-product-id="{{ product._id }}">
+                            <div class="product-image-container">
+                                <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}" class="product-image">
+                                <div class="product-overlay">
+                                    <i class="fa-solid fa-eye"></i>
+                                </div>
+                            </div>
+                            <div class="product-info">
+                                <h3 class="product-name">{{ product.name }}</h3>
+                                <p class="product-description">{{ product.description }}</p>
+                                <p class="product-price"><strong>₹{{ product.price }}</strong></p>
+
+                                <!--whatsapp link-->
+                                <a href="https://wa.me/918305909173?text=Hello!%20I%20would%20like%20to%20buy%20{{ product.name|urlencode }}%20for%20₹{{ product.price }}.%20Please%20let%20me%20know%20the%20availability." class="btn product-btn">Buy Now</a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="no-products">
+                        <i class="fa-solid fa-seedling"></i>
+                        <p>No products found. Please add some!</p>
                     </div>
-                {% endfor %}
-            {% else %}
-                <p style="text-align:center;">No products found. Please add some!</p>
-            {% endif %}
+                {% endif %}
+            </div>
         </div>
     </section>
 
     <!-- About Section -->
     <section id="about" class="about section">
-        <h2 class="section-title">About Us</h2>
-        <p>We provide herbal products sourced from nature to support a healthy lifestyle. Our mission is to help you achieve wellness through organic solutions.</p>
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text" id="about-text">
+                    <h2 class="section-title" id="about-title">About Us</h2>
+                    <p class="about-description" id="about-description">We provide herbal products sourced from nature to support a healthy lifestyle. Our mission is to help you achieve wellness through organic solutions.</p>
+                    <div class="about-features">
+                        <div class="feature" id="feature-1">
+                            <i class="fa-solid fa-leaf"></i>
+                            <h3>Natural Ingredients</h3>
+                            <p>100% organic and natural ingredients</p>
+                        </div>
+                        <div class="feature" id="feature-2">
+                            <i class="fa-solid fa-heart"></i>
+                            <h3>Health Benefits</h3>
+                            <p>Proven health and wellness benefits</p>
+                        </div>
+                        <div class="feature" id="feature-3">
+                            <i class="fa-solid fa-certificate"></i>
+                            <h3>Quality Assured</h3>
+                            <p>Premium quality products guaranteed</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 
-    <!-- Contact Section whatsapp -->
+    <!-- Contact Section -->
     <section id="contact" class="contact section">
-        <h2 class="section-title">Contact Us</h2>
-        <p>Have questions or want to place an order? Reach us on WhatsApp.</p>
-        <a href="https://wa.me/+91 8305909173" class="btn">WhatsApp Us</a>
+        <div class="container">
+            <h2 class="section-title" id="contact-title">Contact Us</h2>
+            <div class="contact-content">
+                <p class="contact-text" id="contact-text">Have questions or want to place an order? Reach us on WhatsApp.</p>
+                <a href="https://wa.me/918305909173" class="btn contact-btn" id="contact-btn">
+                    <i class="fa-brands fa-whatsapp"></i>
+                    WhatsApp Us
+                </a>
+            </div>
+        </div>
     </section>
 
     <!-- Footer -->
-    <footer class="footer">
-        <p>&copy; 2025 Herbal Products. All Rights Reserved.</p>
+    <footer class="footer" id="footer">
+        <div class="container">
+            <p>&copy; 2025 Herbal Products. All Rights Reserved.</p>
+        </div>
     </footer>
+
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loading-screen">
+        <div class="loading-content">
+            <i class="fa-solid fa-leaf loading-icon"></i>
+            <p>Loading Herbal Products...</p>
+        </div>
+    </div>
 
     <!-- JS -->
     <script src="{{ url_for('static', filename='script.js') }}"></script>
